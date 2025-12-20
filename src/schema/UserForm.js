@@ -99,7 +99,7 @@ export function loadNacionalities(nameFile = "nacionalidad.txt") {
     })
     .then((data) => {
       let mi_array = [];
-      mi_array = data.split("\r\n");
+      mi_array = data.split(/\r?\n|\r|\n/g);
       return Promise.resolve(mi_array);
     })
     .catch((error) => {
@@ -267,66 +267,34 @@ export function loadCitiesByCCAA(nameFile = "municipios.xml", code) {
 //   );
 
 export const yupSchema = yup.object({
-  sex: yup.string("Debe escribir su sexo").oneOf(sexs, "Solo puede ser Femenino o Masculino").required("Debe escribir su sexo"),
-  age: yup.number("Debe ser un número").transform(v => isNaN(v) ? 0 : v).integer().max(120, "No puede superar los 120 años").min(16, "Debes tener al menos 16 años").required("Debe escribir su edad en números"),
-  level_PBE: yup.number("Debe ser un número del 1 al 5").transform(v => isNaN(v) ? 1 : v).positive().min(1, "Debe estar entre 1 y 5").max(5, "Debe estar entre 1 y 5").required("Debe seleccionar una de las opciones."),
-  profile: yup.string("Debe ser un texto").oneOf(Object.keys(perfil), "Debe seleccionar entre Estudiante o Profesional de la salud").required("Debe seleccionar entre Estudiante o Profesional de la salud"),
-  speciality: yup.string("Deber se un texto").notRequired(),
-  profarea: yup.array().of(yup.string().oneOf(profareas), "Debe seleccionar").required().min(1, "Debe seleccionar al menos una area profesional o de estudio, pueden ser varias"),
+  sex: yup.string("Debe escribir su sexo").oneOf(sexs, "Solo puede ser Femenino o Masculino").required(),
+  age: yup.number("Debe ser un número").transform(v => isNaN(v) ? 0 : v).integer().max(120, "No puede superar los 120 años").min(16, "Debes tener al menos 16 años").required(),
+  level_PBE: yup.number("Debe ser un número del 1 al 5").transform(v => isNaN(v) ? 1 : v).positive().min(1, "Debe estar entre 1 y 5").max(5, "Debe estar entre 1 y 5").required(),
+  profile: yup.string("Debe ser un texto").oneOf(Object.keys(perfil)).required("Debe seleccionar entre Estudiante o Profesional de la salud"),
   PBE_knownledge: yup.boolean("Deber ser un valor true o false").required("Debe contestar Sí o No"),
-  PBE_training: yup.string("Debe ser un texto")
-    .when('PBE_knownledge', {
-      is: (val) => val && val != 'false',
-      then: schema => schema
-        .oneOf(Object.keys(training), "Debe seleccionar una de las opciones si marcó sí en la regunta anterior")
-        .required("Debe seleccionar una de las opciones si marcó sí en la regunta anterior"),
-      // .test('hasPBE_knowledge', "Debe seleccionar una de las opciones si marcó sí en la regunta anterior",
-      //     (val)=>{
-      //       return Object.keys(training).includes(val)
-      //     }
-      //   ),
-      otherwise: schema => schema.notRequired()
-    }),
-  academic_level: yup.string("Debe ser un texto")
-    .when('hasAcademic',
-      {
-        is: (val) => val && val != undefined,
-        then: schema => schema.required(`Debe escoger entre ${Object.keys(academic_levels)}`),
-        otherwise: schema => schema.notRequired()
-      }),
-  // .test('hasAcademic', `Debe escoger entre ${Object.keys(academic_levels)}`,
-  //   (val) => {
-  //     if (val !== undefined) {
-  //       return (Object.keys(academic_levels).includes(val))
-  //     }
-  //     return true
-  //   }),
-  description: yup.string().when('academic_level', {
-    is: (val) => val && val == 'Máster',
-    then: schema => schema.oneOf(descriptionTypes, `Debe escoger entre ${descriptionTypes}`).required(`Debe escoger entre ${descriptionTypes}`),
-    otherwise: schema => schema.notRequired()
-  }),
-  year_academic_lvl: yup
-    .number("Debe ser un número")
-    .transform(v => isNaN(v) ? undefined : v)
-    .integer("Debe ser un año válido")
-    .when('academic_level', {
-      is: (val) => val && val !== '',
-      then: schema =>
-        schema
-          .required("Debe indicar el año del nivel académico")
-          .test(
-            "min",
-            `Debe ser mayor a ${new Date().getFullYear() - 80}`,
-            val => val >= new Date().getFullYear() - 80
-          )
-          .test(
-            "max",
-            `Debe ser menor a ${new Date().getFullYear() + 50}`,
-            val => val <= new Date().getFullYear() + 50
-          ),
-      otherwise: schema => schema.notRequired(),
-    }),
+  PBE_training: yup.string("Debe ser un texto").oneOf(Object.keys(training), "Debe seleccionar una de las opciones si marcó sí en la regunta anterior").required(),
+  academic_level: yup.string("Debe ser un texto").oneOf(Object.keys(academic_levels), `Debe escoger entre ${Object.keys(academic_levels)}`).required(),
+  description: yup.string("Debe ser texto").oneOf(descriptionTypes, `Debe escoger entre ${descriptionTypes}`).required(),
+  year_academic_lvl: yup.number("Debe ser un número").transform(v => isNaN(v) ? 0 : v).integer().positive()
+    .min(new Date().getFullYear() - 80, `Debe ser mayor a ${new Date().getFullYear() - 80}`)
+    .max(new Date().getFullYear() + 50, `Debe ser menor a ${new Date().getFullYear() + 50}`)
+    .required("Debe seleccionar un año")
+    .test("year_test", "Debe haberlo obtenido a partir de su mayoría de edad o mínimo 16 años revise campo Edad",
+      (val) => {
+        let age_input = age.value
+        if (val === undefined || val === null) {
+          return false
+        }else{
+          
+          let currentYear = new Date().getFullYear()
+          // console.log(val, ((currentYear - age.value) + 18), val, ((currentYear - age.value) + 16))
+          return ((val >= ((currentYear - age_input) + 18)) || (val >= ((currentYear - age_input) + 16)))
+        }
+      }
+    ),
+  speciality: yup.string("Deber se un texto").optional(),
+  profarea: yup.array("Debe ser un conjunto de textos [,...,]").of(yup.string().oneOf(profareas).required("Debe seleccionar al menos una area profesional o de estudio, pueden ser varias"))
+    .min(1, "Debe seleccionar al menos un área profesional"),
   satisfation: yup.number("Debe valorar su satisfacción entre 1 y 10").transform(v => isNaN(v) ? 1 : v).integer().positive()
     .min(1, "Debe valorar su satisfacción entre 1 y 10")
     .max(10, "Debe valorar su satisfacción entre 1 y 10")
@@ -336,86 +304,39 @@ export const yupSchema = yup.object({
   fresh_sas: yup.number("Debe valorar su satisfacción entre 0 y 5").transform(v => isNaN(v) ? 0 : v).integer().positive().min(0).max(5).required("Debe valorar su satisfacción entre 0 y 5"),
   happy_sas: yup.number("Debe valorar su satisfacción entre 0 y 5").transform(v => isNaN(v) ? 0 : v).integer().positive().min(0).max(5).required("Debe valorar su satisfacción entre 0 y 5"),
   interest_sas: yup.number("Debe valorar su satisfacción entre 0 y 5").transform(v => isNaN(v) ? 0 : v).integer().positive().min(0).max(5).required("Debe valorar su satisfacción entre 0 y 5"),
-  activity: yup.array().when('profile', {
-    is: val => val === 'Profesional',
-    then: schema => schema.min(1, "Debe seleccionar una actividad").required(),
-    //.of(yup.string().oneOf(activities, "Debe seleccionar al menos una actividad o marcar otros")).required("Debe seleccionar al menos una actividad o marcar otros"),
-    otherwise: schema => schema.notRequired()
-  }),
-  activity_val_0: yup.number().transform(v => isNaN(v) ? 0 : ((parseFloat(v) * 100) / 100) || 0).min(0, "Mínimo 0%").max(100, "Máximo 100%"),
-  activity_val_1: yup.number().transform(v => isNaN(v) ? 0 : ((parseFloat(v) * 100) / 100) || 0).min(0, "Mínimo 0%").max(100, "Máximo 100%"),
-  activity_val_2: yup.number().transform(v => isNaN(v) ? 0 : ((parseFloat(v) * 100) / 100) || 0).min(0, "Mínimo 0%").max(100, "Máximo 100%"),
-  activity_val_3: yup.number().transform(v => isNaN(v) ? 0 : ((parseFloat(v) * 100) / 100) || 0).min(0, "Mínimo 0%").max(100, "Máximo 100%"),
-  activity_val_4: yup.number().transform(v => isNaN(v) ? 0 : ((parseFloat(v) * 100) / 100) || 0).min(0, "Mínimo 0%").max(100, "Máximo 100%"),
-  sector: yup.array().of(yup.string().oneOf(sectors, "Debe seleccioanr mínimo un sector o especificar otros"))
-    .when('profile', {
-      is: val => val && val === 'Profesional',
-      then: schema => schema
-        .required("Debe seleccionar mínimo un sector o especificar otros").min(1, "Debe seleccionar al menos un sector"),
-      otherwise: schema => schema.notRequired()
-    }),
-  other_sec: yup
-    .string("Debe ser texto")
-    .when('sector', {
-      is: (sector) => sector.includes('Otros'),
-      then: schema => schema
-        .required("Debe incluir otros sectores")
-        .matches(
-          /^([A-Za-z][a-z]*)(\s?,\s?([A-Za-z][a-z]*))*$/,
-          "Debe incluir sectores separados por comas, "
-        ),
-      otherwise: schema => schema.notRequired(),
-    }),
-  enviroment: yup.array().of(yup.string().oneOf(enviroments, "Debe seleccionar a menos un entorno o especifar otros"))
-    .when('profile', {
-      is: val => val && val === 'Profesional',
-      then: schema => schema
-        .required("Debe seleccionar a menos un entorno o especifar otros").min(1, "Debe seleccionar al menos un entorno"),
-      otherwise: schema => schema.notRequired()
-    }),
-  other_env: yup.string()
-    .when('enviroment', {
-      is: (env) => env.includes('Otros'),
-      then: schema => schema
-        .required("Debe incluir otros entornos")
-        .matches(
-          /^([A-Za-z][a-z]*)(\s?,\s?([A-Za-z][a-z]*))*$/,
-          'Debe incluir entornos separados por comas',
-        ),
-      otherwise: schema => schema.notRequired(),
-    }),
-  supervisor: yup.boolean().when('profile', {
-    is: (val) => val && val === 'Profesional',
-    then: schema => schema.required("Debe responder Sí o No"),
-    otherwise: schema => schema.notRequired()
-  }),
-  dedicationW: yup.number("Debe ser un número").transform(v => isNaN(v) ? undefined : v)
-    .when('profile', {
-      is: val => val && val === 'Profesional',
-      then: schema => schema.required("Debe completar la dedicación en horas")
-        .positive('Mayor a 0')
-        .integer('Sin decimales')
-        .test('isPositiveDed', 'Debe ser mayor o igual a 0', val => val >= 0),
-      // .positive('Debe ser mayor a 0')
-      // .integer('Sin decimales').test('', 'Debe ser mayor o igual a 0', val => val > 0),
-      // .matches(val => /^\d+(\.\d{1,2})?$/, 'Puede poner un número separado por punto y 2 decimales máximo',)
-      otherwise: schema => schema.notRequired()
-    }),
-  years: yup.number("Debe ser un número").transform(v => isNaN(v) ? undefined : v)
-    .positive('Mayor a 0')
-    // .integer('Sin decimales')
-    // .test('isGreater', 'Debe ser mayor o igual a 0', val => val > 0)
-    // .transform(v => isNaN(v) ? undefined : v)
-    .when('profile', {
-      is: val => val && val === 'Profesional',
-      then: schema => schema.required("Debe completar los años en activo")
-        // .positive('Mayor a 0')
-        .integer('Sin decimales')
-        .test('isPositive', 'Debe ser mayor o igual a 0', val => val >= 0),
-      // .transform(v => isNaN(v) ? undefined : v),
-      // .positive('Debe ser mayor a 0')
-      // .integer('Sin decimales').test('', 'Debe ser mayot o igual a 0', val => val > 0),
-      // .matches(val => /^\d+(\.\d{1,2})?$/, 'Puede poner un número separado por punto y 2 decimales máximo',)
-      otherwise: schema => schema.notRequired()
-    }),
+  enviroment: yup.array().of(yup.string().oneOf(enviroments, "Debe seleccionar a menos un entorno o especifar otros")).required("Debe seleccionar a menos un entorno o especifar otros").min(1, "Debe seleccionar al menos un entorno"),
+  sector: yup.array().of(yup.string().oneOf(sectors, "Debe seleccioanr mínimo un sector o especificar otros")).required("Debe seleccioanr mínimo un sector o especificar otros").min(1, "Debe seleccionar al menos un sector"),
+  activity: yup.array().min(1, "Debe seleccionar una actividad").required(),//.of(yup.string().oneOf(activities, "Debe seleccionar al menos una actividad o marcar otros")).required("Debe seleccionar al menos una actividad o marcar otros"),
+  activity_val_0: yup.number().transform(v => isNaN(v) ? 0 : ((parseFloat(v) * 100) / 100) || 0).min(0).max(100),
+  activity_val_1: yup.number().transform(v => isNaN(v) ? 0 : ((parseFloat(v) * 100) / 100) || 0).min(0).max(100),
+  activity_val_2: yup.number().transform(v => isNaN(v) ? 0 : ((parseFloat(v) * 100) / 100) || 0).min(0).max(100),
+  activity_val_3: yup.number().transform(v => isNaN(v) ? 0 : ((parseFloat(v) * 100) / 100) || 0).min(0).max(100),
+  activity_val_4: yup.number().transform(v => isNaN(v) ? 0 : ((parseFloat(v) * 100) / 100) || 0).min(0).max(100),
+  // activity_total: yup.number().test(
+  //     "",
+  //     "Debe sumar 100 en total",
+  //     (val, context) => {
+  //       console.log(context.parent.activity_val_0)
+  //       let suma = 0
+  //       for (let i=0; i< activities.length; i++){
+  //         suma +=context.parent[`activity_val_${i}`]
+  //       }
+  //       console.log(suma)
+  //       return(suma <= 100 || suma <=100.00)
+  //     }
+    // ),
+  // other_sec: yup.string().when("sector", {
+  //   is: (sector) =>sector && sector.includes("Otro"), // Si el sector seleccionado es "Otros"
+  //   then: yup.string().required("Debe especificar otros sectores").matches(/^([A-Z][a-z]*)(,([A-Z][a-z]*))*$/, "Debe escribir sectores separados por comas"),
+  //   otherwise: yup.string().notRequired()
+  // }),
+  // other_env: yup.string().when("enviroment", {
+  //   is: (enviroment) => enviroment && enviroment.includes("Otro"),
+  //   then: yup.string().required().matches(/^([A-Z][a-z]*)(,([A-Z][a-z]*))*$/, "Debe incluir entornos separados por comas"),
+  //   otherwise: yup.string().notRequired()
+  // }),
+  supervisor: yup.boolean("Debe responder true o false").required(),
+  dedicationW: yup.number("Debe ser un número").transform(v => isNaN(v) ? 0 : v).positive('No puede tener horas negativas').min(0, "Mínimo debe hacer alguna hora como mínimo o 0 semanales").max(120).required(),
+  years: yup.number("Debe ser un número").transform(v => isNaN(v) ? 0 : v).integer().min(0).max(100).required(),
 })
+

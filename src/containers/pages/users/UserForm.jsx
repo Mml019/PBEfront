@@ -14,7 +14,7 @@ import { replace, useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { yupSchema, academic_levels, level_PBE, loadCCAA, loadAllCities, loadNacionalities, loadCitiesByCCAA, perfil, profareas, sexs, activities, enviroments, training, sectors, descriptions, booleans } from "../../../schema/UserForm.js"
+import { yupSchema, descriptionTypes, academic_levels, level_PBE, loadCCAA, loadAllCities, loadNacionalities, loadCitiesByCCAA, perfil, profareas, sexs, activities, enviroments, training, sectors, descriptions, booleans } from "../../../schema/UserForm.js"
 import FormControlFloatingLabel from "../../../components/forms/FormControl.jsx"
 import FormInputGroup from "../../../components/forms/FormInputGroup.jsx";
 import FormTable from "../../../components/forms/FormTable.jsx";
@@ -95,7 +95,12 @@ export default function UserForm() {
   const yupLoadData = yup.object({
     nationality: yup.string().required("Debe seleccionar uno de los valores disponibles"),
     city: yup.string().required("Debe escribir una ciudad de residencia o seleccionar uno de los valores disponibles"),
-    province: yup.string().required("Debe escribir una provincia o región o seleccionar uno de los valores disponibles"),
+    province: yup.string().required("Debe escribir o seleccionar una provincia o región"),
+    // city: yup.string().when("nationality", {
+    //   is: "Española",
+    //   then: yup.string().oneOf(citiesAll, "Debe seleccionar uno de los valores disponibles").required(),
+    //   otherwise: yup.string().required("Debe escribir una ciudad de residencia")
+    // }),
     // province: yup.string().when("nationality", {
     //   is: "Española",
     //   then: yup.string().oneOf(provincia_names, "Debe seleccionar uno de los valores disponibles").required(),
@@ -114,20 +119,39 @@ export default function UserForm() {
   } = useForm({
     resolver: yupResolver(yupLoadData),
     defaultValues: {
-      sex: '',
-      nationality: '',
-      city: '',
-      province: '',
-      profile: '',
-      description: "",
-      // year_academic_lvl: new Date().getFullYear(),
+      age: 18,
+      sex: 'Femenino',
+      nationality: 'Española',
+      city: 'Palma',
+      province: 'Illes Balears',
+      level_PBE: '1',
+      profile: 'Profesional',
+      PBE_knownledge: 'true',
+      PBE_training: 'Bibliográfica',
+      academic_level: 'Máster',
+      description: "Oficial",
+      year_academic_lvl: new Date().getFullYear(),
       speciality: '',
-      profarea: [],
-      activity: [],
-      enviroment: [],
+      profarea: ["Enfermería"],
+      active_sas: "0",
+      calm_sas: "0",
+      fresh_sas: "0",
+      happy_sas: "0",
+      interest_sas: "0",
+      satisfation: "1",
+      activity: ["Asistencial", "Investigación", "Docencia", "Administración", "Otra"],
+      activity_val_0: 50,
+      activity_val_1: 50,
+      activity_val_2: 50,
+      activity_val_3: 50,
+      activity_val_4: 50,
+      enviroment: ["Atención especializada"],
       other_env: "",
-      sector: [],
-      other_sec: '',
+      sector: ["Privado"],
+      other_sec: "",
+      dedicationW: 5,
+      supervisor: 'true',
+      years: 0,
     },
     // Only executes validator when submits the form not in every render
     mode: 'onSubmit',
@@ -148,6 +172,7 @@ export default function UserForm() {
   const not100 = () => {
     // Show message total sum 100 of percentage activity
     if (activitiesChecked !== undefined || activitiesChecked !== null || activitiesChecked.length !== 0) {
+      console.log(activitiesChecked)
       const positions = activitiesChecked.map(act_check => activities.indexOf(act_check));
       getValues([''])
       let suma = 0
@@ -163,35 +188,33 @@ export default function UserForm() {
   }
 
   const onSubmit = (data) => {
-    console.log(data)
     setLoadingSpin(true);
     // Show alert if sum total more than 100
-    if (profesional === 'Profesional') {
-      if (not100()) {
-        setLoadingSpin(false)
-        return toast.error("Deben sumar las actividades un total de 100% ni más ni menos")
-      }
-    }
-    // nav("/quiz/questions/");
-    // POST to make User in database
-    try {
-      console.log(`create ${data}`)
-      // JSON Stringify is in POST request in dispatcher
-      // unwrap to manage request errors or payload
-      dispatch(createUser(data));
-      // put in localstorage user id is in REDUX not necessary
-      // localStorage.setItem('userCreated', JSON.stringify(userCreated));
-    } catch (err) {
-      if (statusUser === 'failed') {
-        nav('/quiz/error/', { replace: true })
-      }
-      toast.error(`Error ${err} al crear el usuario y enviar el form. ${err.message}`)
-    } finally {
+    if (not100()) {
       setLoadingSpin(false)
+      return toast.error("Deben sumar las actividades un total de 100% ni más ni menos")
+    } else {
+      // nav("/quiz/questions/");
+      // POST to make User in database
+      try {
+        console.log(data)
+        // JSON Stringify is in POST request in dispatcher
+        // unwrap to manage request errors or payload
+        dispatch(createUser(data));
+        // put in localstorage user id is in REDUX not necessary
+        // localStorage.setItem('userCreated', JSON.stringify(userCreated));
+      } catch (err) {
+        if (statusUser === 'failed') {
+          nav('/quiz/error/', { replace: true })
+        }
+        toast.error(`Error ${err} al crear el usuario y enviar el form. ${err.message}`)
+      } finally {
+        setLoadingSpin(false)
+      }
+      // navigate to question form
+      nav("/quiz/questions/");
+      // nav('/quiz/questions/', { replace: true })
     }
-    // navigate to question form
-    nav("/quiz/questions/");
-    // nav('/quiz/questions/', { replace: true })
   }
 
   if (loading) {
@@ -205,6 +228,7 @@ export default function UserForm() {
       </div>
     )
   }
+
 
   return (
     <LayoutUser>
@@ -409,8 +433,8 @@ export default function UserForm() {
                   key="speciality"
                   // id={`basic_data_${index}`}
                   name="speciality"
-                  label="Especialidad (si procede)"
-                  placeholder="Especialidad (si procede)"
+                  label="Especialida(si procede)"
+                  placeholder="Especialidad(si procede)"
                   type="text"
                 //value={e.value}
                 />
@@ -473,39 +497,37 @@ export default function UserForm() {
               </Col>
             </Row>
           </div>
-          {master && (
-            <div id="year_academic_lvl">
-              <Row className="mb-3">
-                {/* <Form.Group
+          <div id="year_academic_lvl">
+            <Row className="mb-3">
+              {/* <Form.Group
                 as={Row}
                 className="mb-3"
                 controlId="academic_lvl_form"
               > */}
-                <Form.Label column sm="6" className="pr-0 fw-bold">
-                  Año de obtención de dicho nivel académico obtenido:
-                </Form.Label>
-                <Col sm="4">
-                  <Form.Control
-                    type="number"
-                    placeholder="Año(número)"
-                    {...errors["year_academic_lvl"]}
-                    name="year_academic_lvl"
-                    isInvalid={!!errors["year_academic_lvl"]}
-                    {...register("year_academic_lvl")}
-                    min={new Date().getFullYear() - 80}
-                    max={new Date().getFullYear() + 50}
-                  />
-                  {errors["year_academic_lvl"] && (
-                    <Form.Control.Feedback type="invalid">
-                      {errors["year_academic_lvl"].message}
-                      {/* {errors[name] && errors[name]?.message} */}
-                    </Form.Control.Feedback>
-                  )}
-                </Col>
-                {/* </Form.Group> */}
-              </Row>
-            </div>
-          )}
+              <Form.Label column sm="6" className="pr-0 fw-bold">
+                Año de obtención de dicho nivel académico obtenido:
+              </Form.Label>
+              <Col sm="4">
+                <Form.Control
+                  type="number"
+                  placeholder="Año(número)"
+                  {...errors["year_academic_lvl"]}
+                  name="year_academic_lvl"
+                  isInvalid={!!errors["year_academic_lvl"]}
+                  {...register("year_academic_lvl")}
+                  min={new Date().getFullYear() - 80}
+                  max={new Date().getFullYear() + 50}
+                />
+                {errors["year_academic_lvl"] && (
+                  <Form.Control.Feedback type="invalid">
+                    {errors["year_academic_lvl"].message}
+                    {/* {errors[name] && errors[name]?.message} */}
+                  </Form.Control.Feedback>
+                )}
+              </Col>
+              {/* </Form.Group> */}
+            </Row>
+          </div>
           <div id="PBE_knownledge">
             <Row className="mb-3">
               <h3 className="tittle-quest">
@@ -532,7 +554,7 @@ export default function UserForm() {
                 ))}
               </Col>
             </Row>
-            {PBE_knownledge === 'true' && (
+            {PBE_knownledge === "Sí" && (
               <div id="PBE_training">
                 <Row className="mb-3">
                   <h3 className="tittle-quest">
@@ -648,9 +670,9 @@ export default function UserForm() {
                       name="years" //active years from profesional
                       label="¿Cuántos años lleva usted en activo? (relacionado con la profesión sanitaria):"
                       placeholder=""
-                    // type="number"
-                    // min="0"
-                    // max="80"
+                      type="number"
+                      min="0"
+                      max="80"
                     //value={e.value}
                     />
                   </Row>
@@ -666,8 +688,9 @@ export default function UserForm() {
                       name="dedicationW" //active years from profesional
                       label="¿Cuál es su dedicación laboral semanal en horas en el momento actual?"
                       placeholder=""
-                    // min="5"
-                    // max="150"
+                      type="number"
+                      min="5"
+                      max="150"
                     //value={e.value}
                     />
                   </Row>
@@ -696,11 +719,11 @@ export default function UserForm() {
                           index={index}
                         />
                       ))}
-                      {/* {!!errors['enviroment'] && (
+                      {!!errors['enviroment'] && (
                         <Form.Control.Feedback type="invalid" style={{ display: 'block' }}>
                           {errors['enviroment'].message}
                         </Form.Control.Feedback>
-                      )} */}
+                      )}
                       {otherEnviroment.includes("Otros") && (
                         <OtherCheck
                           name={"other_env"}
@@ -740,8 +763,8 @@ export default function UserForm() {
                       {otherSector.includes("Otros") && (
                         <OtherCheck
                           name={"other_sec"}
-                          register={register}
                           errors={errors}
+                          register={register}
                         />
                       )}
                     </Col>
