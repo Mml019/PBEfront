@@ -95,11 +95,16 @@ export default function UserForm() {
   const yupLoadData = yup.object({
     nationality: yup.string().required("Debe seleccionar uno de los valores disponibles"),
     city: yup.string().required("Debe escribir una ciudad de residencia o seleccionar uno de los valores disponibles"),
-    province: yup.string().required("Debe escribir una provincia o región o seleccionar uno de los valores disponibles"),
+    province: yup.string().required("Debe escribir una provincia o región o seleccionar uno de los valores disponibles"),    
+    // city: yup.string().when("nationality", {
+    //   is: "Española",
+    //   then: schema => schema.oneOf(citiesAll, "Debe seleccionar uno de los valores disponibles").required(),
+    //   otherwise: schema => schema.required("Debe escribir una ciudad de residencia")
+    // }),
     // province: yup.string().when("nationality", {
     //   is: "Española",
-    //   then: yup.string().oneOf(provincia_names, "Debe seleccionar uno de los valores disponibles").required(),
-    //   otherwise: yup.string().required("Debe escribir una provincia o región de residencia")
+    //   then: schema => schema.oneOf(provincia_names, "Debe seleccionar uno de los valores disponibles").required(),
+    //   otherwise: schema => schema.required("Debe escribir una provincia o región de residencia")
     // }),
     ...yupSchema.fields
   })
@@ -120,7 +125,6 @@ export default function UserForm() {
       province: '',
       profile: '',
       description: "",
-      // year_academic_lvl: new Date().getFullYear(),
       speciality: '',
       profarea: [],
       activity: [],
@@ -163,7 +167,6 @@ export default function UserForm() {
   }
 
   const onSubmit = (data) => {
-    console.log(data)
     setLoadingSpin(true);
     // Show alert if sum total more than 100
     if (profesional === 'Profesional') {
@@ -172,10 +175,8 @@ export default function UserForm() {
         return toast.error("Deben sumar las actividades un total de 100% ni más ni menos")
       }
     }
-    // nav("/quiz/questions/");
     // POST to make User in database
     try {
-      console.log(`create ${data}`)
       // JSON Stringify is in POST request in dispatcher
       // unwrap to manage request errors or payload
       dispatch(createUser(data));
@@ -191,7 +192,6 @@ export default function UserForm() {
     }
     // navigate to question form
     nav("/quiz/questions/");
-    // nav('/quiz/questions/', { replace: true })
   }
 
   if (loading) {
@@ -243,8 +243,6 @@ export default function UserForm() {
                   options={nationalities}
                   register={register}
                   errors={errors}
-                //onChange={(e)=>{ nationality = e.target.value}}
-                // onChange={handleSelect}
                 />
               </div>
             </Col>

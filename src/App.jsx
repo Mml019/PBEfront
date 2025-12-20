@@ -19,11 +19,11 @@ import handleOnChange from "../src/containers/pages/users/StartQuiz";
 
 // if i use export default function (exportación por defecto)
 // without {} and we could change the name
-import AdminPage from "./containers/pages/admin/AdminPage";
-import AdminForm from "./containers/pages/admin/AdminForm";
-import Questions from "./containers/pages/admin/Questions";
-import Users from "./containers/pages/admin/Users";
-import Results from "./containers/pages/admin/Results";
+// import AdminPage from "./containers/pages/admin/AdminPage";
+// import AdminForm from "./containers/pages/admin/AdminForm";
+// import Questions from "./containers/pages/admin/Questions";
+// import Users from "./containers/pages/admin/Users";
+// import Results from "./containers/pages/admin/Results";
 
 import Error404 from "./containers/pages/Error404";
 import ErrorTimeoutBadR from "./containers/pages/ErrorTimeoutBadR";

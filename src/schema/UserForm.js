@@ -82,7 +82,6 @@ export const level_PBE = [1, 2, 3, 4, 5];
 export function loadNacionalities(nameFile = "nacionalidad.txt") {
   if (!nameFile.endsWith("txt")) {
     return toast.error("El fichero debe ser un tipo txt");
-    // return toast.error("El fichero debe ser un tipo txt")
   }
 
   let dirName = "/data";
@@ -99,7 +98,7 @@ export function loadNacionalities(nameFile = "nacionalidad.txt") {
     })
     .then((data) => {
       let mi_array = [];
-      mi_array = data.split("\r\n");
+      mi_array = data.split(/\r?\n|\r|\n/g);
       return Promise.resolve(mi_array);
     })
     .catch((error) => {
