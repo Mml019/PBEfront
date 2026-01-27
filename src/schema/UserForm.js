@@ -90,7 +90,6 @@ export function loadNacionalities(nameFile = "nacionalidad.txt") {
   return fetch(dirName)
     .then((response) => {
       if (!response.ok) {
-        console.log(`Error al recibir respuesta status ${response.status}`);
         return toast.error(
           `Error al recibir respuesta status ${response.status}`
         );
@@ -103,9 +102,6 @@ export function loadNacionalities(nameFile = "nacionalidad.txt") {
       return Promise.resolve(mi_array);
     })
     .catch((error) => {
-      console.log(
-        `Error: ${error}.\n No se encuentra el fichero ${nameFile} en ${dirName}`
-      );
       return toast.error(
         `Error: ${error}.\n No se encuentra el fichero ${nameFile} en ${dirName}`
       );
@@ -115,7 +111,6 @@ export function loadNacionalities(nameFile = "nacionalidad.txt") {
 // Provide a nameFile and returns an array of dictionary objects {nom_oficial: Mallorca, codi: 07 }
 export function loadCCAA(nameFile = "CCAA.xml") {
   if (!nameFile.endsWith("xml")) {
-    console.log("El fichero debe ser un tipo xml");
     return toast.error("El fichero debe ser un tipo xml");
   }
 
@@ -124,7 +119,6 @@ export function loadCCAA(nameFile = "CCAA.xml") {
   return fetch(dirName)
     .then((response) => {
       if (!response.ok) {
-        console.log(`Error al recibir respuesta status ${response.status}`);
         return toast.error(
           `Error al recibir respuesta status ${response.status}`
         );
@@ -145,9 +139,6 @@ export function loadCCAA(nameFile = "CCAA.xml") {
       return Promise.resolve(CCAA);
     })
     .catch((err) => {
-      console.log(
-        `Error en fetch ${err} del fichero ${nameFile} ruta ${dirName}`
-      );
       return toast.error(
         `Error en fetch ${err} del fichero ${nameFile} ruta ${dirName}`
       );
@@ -157,7 +148,6 @@ export function loadCCAA(nameFile = "CCAA.xml") {
 // Return an array of dictionary of all cities {nom: Sineu, codi_prov_ncia:07 } if pass a nameFile
 export function loadAllCities(nameFile = "municipios.xml") {
   if (!nameFile.endsWith("xml")) {
-    console.log("El fichero debe ser un tipo xml");
     return toast.error("El fichero debe ser un tipo xml");
   }
 
@@ -166,7 +156,6 @@ export function loadAllCities(nameFile = "municipios.xml") {
   return fetch(dirName)
     .then((response) => {
       if (!response.ok) {
-        console.log(`Error al recibir respuesta status ${response.status}`);
         return toast.error(
           `Error al recibir respuesta status ${response.status}`
         );
@@ -188,9 +177,6 @@ export function loadAllCities(nameFile = "municipios.xml") {
       return Promise.resolve(cities);
     })
     .catch((err) => {
-      console.log(
-        `Error en fetch ${err} del fichero ${nameFile} ruta ${dirName}`
-      );
       return toast.error(
         `Error en fetch ${err} del fichero ${nameFile} ruta ${dirName}`
       );
@@ -200,7 +186,6 @@ export function loadAllCities(nameFile = "municipios.xml") {
 // CCAA.xml codi == codi_prov_ncia municipios.xml
 export function loadCitiesByCCAA(nameFile = "municipios.xml", code) {
   if (!nameFile.endsWith("xml")) {
-    console.log("El fichero debe ser un tipo xml");
     return toast.error("El fichero debe ser un tipo xml");
   }
 
@@ -210,7 +195,6 @@ export function loadCitiesByCCAA(nameFile = "municipios.xml", code) {
   return fetch(dirName)
     .then((response) => {
       if (!response.ok) {
-        console.log(`Error al recibir respuesta status ${response.status}`);
         return `Error al recibir respuesta status ${response.status}`;
       }
       // this return is catched by the other then
@@ -220,24 +204,18 @@ export function loadCitiesByCCAA(nameFile = "municipios.xml", code) {
       const parser = new DOMParser();
       const xml = parser.parseFromString(str, "application/xml");
       const rows = xml.getElementsByTagName("row");
-      // cities_code = xml.getElementsByTagName("row[codi_prov_ncia]=04");
 
       let cities = [];
       Array.from(rows).forEach((row) => {
         let city = {};
         if (row.querySelector("codi_prov_ncia").textContent == code) {
           city = row.querySelector("nom").textContent;
-          //console.log(row.querySelector("nom").textContent)
-          // city["cp"] = row.querySelector("codi").textContent;
           cities.push(city);
         }
       });
       return Promise.resolve(cities);
     })
     .catch((err) => {
-      console.log(
-        `Error en fetch ${err} del fichero ${nameFile} ruta ${dirName}`
-      );
       return toast.error(
         `Error en fetch ${err} del fichero ${nameFile} ruta ${dirName}`
       );

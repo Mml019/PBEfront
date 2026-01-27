@@ -12,7 +12,6 @@ import UserResult from "./containers/pages/users/UserResult";
 import EticCondition from "./containers/pages/users/EticCondition";
 import Instructions from "./containers/pages/users/Instructions";
 import Congratulations from "./containers/pages/users/Congratulations";
-import handleOnChange from "../src/containers/pages/users/StartQuiz";
 // if i use export direct into funtion statement (exportación nombrada)
 // with {} and the component name equal funtion name
 //import {AdminForm} from './containers/AdminForm'
