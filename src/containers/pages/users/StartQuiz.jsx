@@ -139,4 +139,3 @@ export default function StartQuiz() {
     </LayoutUser>
   );
 }
-
