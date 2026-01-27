@@ -1,5 +1,5 @@
 <response>
-    <row>
+    <rows>
         <row _id="row-q3c4_4srd.s9x8" _uuid="00000000-0000-0000-781B-C1B8C4C2488D" _position="0"
             _address="https://analisi.transparenciacatalunya.cat/resource/x5xm-w9x7/row-q3c4_4srd.s9x8">
             <codi>010014</codi>
@@ -48804,5 +48804,5 @@
             <nom>Altres/Diversos</nom>
             <codi_prov_ncia>99</codi_prov_ncia>
         </row>
-    </row>
+    </rows>
 </response>

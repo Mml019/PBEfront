@@ -20,7 +20,7 @@ import { api } from '../../api/api';
 // );
 
 export const createUser = createAsyncThunk('user/createUser',
-    async (dataUser, { rejectWithValue }) => {
+  async (dataUser, { rejectWithValue }) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_REACT_API_URL}/uib/PEBquiz/user/`, {
         method: 'POST',
@@ -28,7 +28,10 @@ export const createUser = createAsyncThunk('user/createUser',
         body: JSON.stringify(dataUser)
       });
       const data = await response.json();
-      return data; 
+      if(!response.ok){
+        return rejectWithValue(`Usuario no se ha podido crear. Error al crearse: ${data.error}`);
+      }
+      return data;
     } catch (err) {
       return rejectWithValue(err.message);
     }
@@ -56,7 +59,7 @@ export const userSlice = createSlice({
       })
       .addCase(createUser.rejected, (state, action) => {
         state.statusUser = 'failed';
-        state.errorUser = action.error.message;
+        state.errorUser = action.payload || action.error.message;
       });
   }
 })

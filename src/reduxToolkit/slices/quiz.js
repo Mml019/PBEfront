@@ -4,13 +4,19 @@ import { api } from "../../api/api";
 // Returns a json with a list of object quiz (allQuiz()) with their questions
 export const getQuizzesRandom = createAsyncThunk(
   "quiz/getQuizzesRandom",
-  async () => {
-    const response = await fetch(
-      `${import.meta.env.VITE_REACT_API_URL}/uib/PEBquiz/quiz/`
-    );
-    if (!response.ok) throw new Error("Error fetching quiz, we don't have any questions");
-    const data = await response.json();
-    return data;
+  async (arg, { rejectWithValue }) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_API_URL}/uib/PEBquiz/quiz/`
+      );
+      const data = await response.json();
+      if (!response.ok){
+        return rejectWithValue(`Error obteniendo cuestionarios. ${data.error}`);
+      } 
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
   }
 );
 
@@ -50,7 +56,7 @@ const quizSlice = createSlice({
       state.quiz_ids = action.payload.ids;
     },
     nextQuiz: (state) => {
-      if (state.currentQuizIndex < state.quiz_ids.length-1) {
+      if (state.currentQuizIndex < state.quiz_ids.length - 1) {
         state.currentQuizIndex += 1
         state.currentQuiz = state.quiz_ids[state.currentQuizIndex]
       } else {
@@ -66,6 +72,13 @@ const quizSlice = createSlice({
       const index = action.payload;
       state.checkedList[index] = !state.checkedList[index];
     },
+    resetQuiz(state) {
+      state.quiz_ids = []
+      state.currentQuiz = null
+      state.currentQuizIndex = 0
+      state.statusQRandom = 'idle'
+      state.errorQRandom = null
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -81,7 +94,7 @@ const quizSlice = createSlice({
       })
       .addCase(getQuizzesRandom.rejected, (state, action) => {
         state.statusQRandom = "failed";
-        state.errorQRandom = action.error.message;
+        state.errorQRandom = action.payload || action.error.message;
       });
   },
 });

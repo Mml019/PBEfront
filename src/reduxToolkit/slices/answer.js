@@ -4,15 +4,22 @@ import { api } from '../../api/api';
 export const sendAnswers = createAsyncThunk('answer/sendAnswers',
     async (answers, { rejectWithValue }) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_REACT_API_URL}/uib/PEBquiz/options/`, {
+            const response = await fetch(`${import.meta.env.VITE_REACT_API_URL}/uib/PEBquiz/respuestas/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(answers)
             });
-            if (!response.ok) throw new Error("Error post answers, answers not will be saved");
             const data = await response.json();
+            if (!response.ok) {
+                return rejectWithValue({
+                    status: response.status,   // 400, 409, etc.
+                    message: data.error || 'Error desconocido'
+                });
+                //throw new Error("error post answers, answers not will be saved");
+            }
             return data;
         } catch (err) {
+            console.log(err)
             return rejectWithValue(err.message);
         }
     }
@@ -31,8 +38,8 @@ export const sendAnswers = createAsyncThunk('answer/sendAnswers',
 //             console.log(response)
 //             return (response.data)
 
-//         } catch (error) {
-//             return rejectWithValue(error.response?.data || `Error setting answers ${err.message}`);
+//         } catch (errorAnswer) {
+//             return rejectWithValue(errorAnswer.response?.data || `errorAnswer setting answers ${err.message}`);
 //         }
 //     }
 // );
@@ -40,15 +47,15 @@ export const sendAnswers = createAsyncThunk('answer/sendAnswers',
 export const answerSlice = createSlice({
     name: 'answer',
     initialState: {
-        results: [],
         answers: [],
         currentAnswer: null,
         responseTime: 0,
         statusAnswer: 'idle',
-        error: null,
-        corrects:0,
+        statusRequest: null,
+        errorAnswer: null,
+        corrects: 0,
         incorrects: 0,
-        areas:[]
+        areas: []
     },
     reducers: {
         setAnswer(state, action) {
@@ -62,6 +69,14 @@ export const answerSlice = createSlice({
         },
         setTime(state, action) {
             state.responseTime = action.payload
+        },
+        resetAnswers(state) {
+            state.answers = []
+            state.currentAnswer = null
+            state.responseTime = 0
+            state.statusAnswer = 'idle'
+            state.errorAnswer = null
+            state.statusRequest = null
         }
     },
     extraReducers: (builder) => {
@@ -77,12 +92,13 @@ export const answerSlice = createSlice({
             })
             .addCase(sendAnswers.rejected, (state, action) => {
                 state.statusAnswer = 'failed';
-                state.error = action.error.message
+                state.errorAnswer = action.payload?.message || action.error.message
+                state.statusRequest = action.payload?.status
             })
     }
 })
 
 // export actions
-export const { setAnswer, setTime } = answerSlice.actions;
+export const { setAnswer, setTime, resetAnswers } = answerSlice.actions;
 
 export default answerSlice.reducer

@@ -19,14 +19,14 @@ import handleOnChange from "../src/containers/pages/users/StartQuiz";
 
 // if i use export default function (exportación por defecto)
 // without {} and we could change the name
-// import AdminPage from "./containers/pages/admin/AdminPage";
-// import AdminForm from "./containers/pages/admin/AdminForm";
-// import Questions from "./containers/pages/admin/Questions";
-// import Users from "./containers/pages/admin/Users";
-// import Results from "./containers/pages/admin/Results";
+import AdminPage from "./containers/pages/admin/AdminPage";
+import AdminForm from "./containers/pages/admin/AdminForm";
+import Questions from "./containers/pages/admin/Questions";
+import Users from "./containers/pages/admin/Users";
+import Results from "./containers/pages/admin/Results";
 
-import Error404 from "./containers/pages/Error404";
-import ErrorTimeoutBadR from "./containers/pages/ErrorTimeoutBadR";
+import Error404 from "./containers/errors/Error404";
+import ErrorTimeoutBadR from "./containers/errors/ErrorTimeoutBadR";
 
 function App() {
   return (
@@ -46,9 +46,9 @@ function App() {
           <Route path="/quiz/results/" element={<UserResult />} />
           <Route path="/quiz/congratulations/" element={<Congratulations />} />       
           <Route path="/quiz/time-out-response/" element={<ErrorTimeoutBadR/>} />   
-          {/* <Route path='quiz-admin/' element={<AdminPage/>} /> */}
           <Route path="/quiz/error/" element={<Error404 error={"No existe la url a la que se dirige"}/>} />
           <Route path="*" element={<Error404 error={"No existe la url a la que se dirige"}/>} />
+           {/* <Route path='quiz-admin/' element={<AdminPage/>} /> */}
         </Routes>
       </BrowserRouter>
     </Provider>
