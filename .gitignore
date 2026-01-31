@@ -172,3 +172,4 @@ vite.config.js
 package.json
 index.html
 eslint.config.js
+package-lock.json
