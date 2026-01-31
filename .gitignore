@@ -167,3 +167,8 @@ env.bak/
 venv.bak/
 
 # End of https://www.toptal.com/developers/gitignore/api/react
+# Config 
+vite.config.js
+package.json
+index.html
+eslint.config.js
