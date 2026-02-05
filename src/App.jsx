@@ -8,7 +8,6 @@ import store from "./store";
 import StartQuiz from "./containers/pages/users/StartQuiz";
 import UserForm from "./containers/pages/users/UserForm";
 import UserQuiz from "./containers/pages/users/UserQuiz";
-import UserResult from "./containers/pages/users/UserResult";
 import EticCondition from "./containers/pages/users/EticCondition";
 import Instructions from "./containers/pages/users/Instructions";
 import Congratulations from "./containers/pages/users/Congratulations";
@@ -42,7 +41,6 @@ function App() {
           />
           <Route path="/quiz/form/" element={<UserForm />} />
           <Route path="/quiz/questions/" element={<UserQuiz/>} />
-          <Route path="/quiz/results/" element={<UserResult />} />
           <Route path="/quiz/congratulations/" element={<Congratulations />} />       
           <Route path="/quiz/time-out-response/" element={<ErrorTimeoutBadR/>} />   
           <Route path="/quiz/error/" element={<Error404 error={"No existe la url a la que se dirige"}/>} />

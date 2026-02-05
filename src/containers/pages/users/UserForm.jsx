@@ -38,11 +38,6 @@ export default function UserForm() {
 
   const { currentUser, statusUser, errorUser } = useSelector((state) => state.user)
 
-  const basic_data = [
-    { placeholder: "Sexo", label: "Sexo", type: "text", name: "sex" },
-    { placeholder: 18, label: "Edad(años)", type: "number", name: "age" },
-  ];
-
   async function fetchAllData() {
     try {
       let [nationalitiesData, provinciaData, cities_all, balear_cities] = await Promise.all(
@@ -153,6 +148,7 @@ export default function UserForm() {
   }
 
   const onSubmit = async (data) => {
+    console.log(data)
     setLoadingSpin(true);
     // Show alert if sum total more than 100
     if (profesional === 'Profesional') {
@@ -198,28 +194,49 @@ export default function UserForm() {
       {/* </div> */}
       <div id="content">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div id="basic-data">
-            <Row className="mb-3 align-items-center">
-              <Row>
-                <h2 className="section-form">Datos principales:</h2>
-              </Row>
-              <Col>
-                {basic_data.map((e, index) => (
-                  <FormControlFloatingLabel
-                    register={register}
-                    errors={errors}
-                    key={`basic_data_${index}`}
-                    name={e.name}
-                    label={e.label}
-                    placeholder={e.label}
-                    type={e.type}
-                    value={index}
-                  />
-                ))}
-              </Col>
+          <Row className="mb-1 align-items-center">
+            <Row>
+              <h2 className="section-form">Datos principales:</h2>
             </Row>
-          </div>
+            {!!errors['age'] &&
+              <div className="invalid-feedback d-block">
+                {errors['age'].message}
+              </div>}
+            <Col>
+              <FormControlFloatingLabel
+                register={register}
+                errors={errors}
+                key='age'
+                name='age'
+                label="Edad(años)"
+                placeholder='18'
+                type='number'
+              // value={index}
+              />
+            </Col>
+          </Row>
+          <Row className="mb-1 align-items-center">
+            {!!errors['sex'] &&
+              <div className="invalid-feedback d-block">
+                {errors['sex'].message}
+              </div>}
+            <Col>
+              <div id="sex">
+                <SelectField
+                  name='sex'
+                  ariaLabel='Sexo'
+                  options={['Masculino', 'Femenino']}
+                  register={register}
+                  errors={errors}
+                />
+              </div>
+            </Col>
+          </Row>
           <Row className="mb-3 align-items-center">
+            {!!errors['nationality'] &&
+              <div className="invalid-feedback d-block">
+                {errors['nationality'].message}
+              </div>}
             <Col>
               <div id="nacionalities">
                 <SelectField
@@ -237,6 +254,10 @@ export default function UserForm() {
               ?
               <>
                 <Row className="mb-3 align-items-center">
+                  {!!errors['province'] &&
+                    <div className="invalid-feedback d-block">
+                      {errors['province'].message}
+                    </div>}
                   <Col>
                     <div id="provinces">
                       <SelectField
@@ -246,12 +267,12 @@ export default function UserForm() {
                         register={register}
                         errors={errors}
                         onChange={async (e) => {
-                          if (e.target.value!=='' && e.target.value!==null && e.target.value!== undefined && e.target.value !== ('Seleccione una Provincia/Región')) {
+                          if (e.target.value !== '' && e.target.value !== null && e.target.value !== undefined && e.target.value !== ('Seleccione una Provincia/Región')) {
                             let code = (provincia.find(item => item.nom_oficial === e.target.value)).codi
                             let arr = []
                             arr = await loadCitiesByCCAA('municipios.xml', code)
                             setCities(arr)
-                          }else{
+                          } else {
                             setCities([])
                           }
                         }}
@@ -260,12 +281,16 @@ export default function UserForm() {
                   </Col>
                 </Row>
                 <Row className="mb-3 align-items-center">
+                  {!!errors['city'] &&
+                    <div className="invalid-feedback d-block">
+                      {errors['city'].message}
+                    </div>}
                   <Col>
                     <div id="cities">
                       <SelectField
                         name='city'
                         ariaLabel='Ciudad de residencia'
-                        options={cities.length > 0 ? cities :citiesAll}
+                        options={cities.length > 0 ? cities : citiesAll}
                         register={register}
                         errors={errors}
                       />
@@ -276,6 +301,10 @@ export default function UserForm() {
               :
               <>
                 <Row className="mb-3 align-items-center">
+                  {!!errors['province'] &&
+                    <div className="invalid-feedback d-block">
+                      {errors['province'].message}
+                    </div>}
                   <Col>
                     <div id="province">
                       <FormControlFloatingLabel
@@ -289,7 +318,12 @@ export default function UserForm() {
                       />
                     </div>
                   </Col>
-                </Row><Row className="mb-3 align-items-center">
+                </Row>
+                <Row className="mb-3 align-items-center">
+                  {!!errors['city'] &&
+                    <div className="invalid-feedback d-block">
+                      {errors['city'].message}
+                    </div>}
                   <Col>
                     <div id="cities">
                       <FormControlFloatingLabel
@@ -314,6 +348,10 @@ export default function UserForm() {
               </h3>
             </Row>
             <Row className="mb-3">
+              {!!errors['level_PBE'] &&
+                <div className="invalid-feedback d-block">
+                  {errors['level_PBE'].message}
+                </div>}
               <Col>
                 {level_PBE.map((e, index) => (
                   <CheckBox
@@ -339,6 +377,10 @@ export default function UserForm() {
               </h3>
             </Row>
             <Row className="mb-3">
+              {!!errors['profile'] &&
+                <div className="invalid-feedback d-block">
+                  {errors['profile'].message}
+                </div>}
               <Col>
                 {Object.entries(perfil).map(([key, val], index) => (
                   <CheckBox
@@ -365,6 +407,10 @@ export default function UserForm() {
               </h3>
             </Row>
             <Row className="mb-3">
+              {!!errors['profarea'] &&
+                <div className="invalid-feedback d-block">
+                  {errors['profarea'].message}
+                </div>}
               <Col>
                 {profareas.map((e, index) => (
                   <CheckBox
@@ -383,6 +429,10 @@ export default function UserForm() {
               </Col>
             </Row>
             <Row>
+              {!!errors['speciality'] &&
+                <div className="invalid-feedback d-block">
+                  {errors['speciality'].message}
+                </div>}
               <Col>
                 <FormControlFloatingLabel
                   register={register}
@@ -404,6 +454,10 @@ export default function UserForm() {
               </h3>
             </Row>
             <Row className="mb-3">
+              {!!errors['academic_level'] &&
+                <div className="invalid-feedback d-block">
+                  {errors['academic_level'].message}
+                </div>}
               <Col>
                 {Object.entries(academic_levels).map(([key, val], index) => (
                   <CheckBox
@@ -426,6 +480,11 @@ export default function UserForm() {
                       </h3>
                     </Row>
                     <Col>
+                      {!!errors['description'] && (
+                        <div className="invalid-feedback d-block" style={{ display: 'block' }}>
+                          {errors['description'].message}
+                        </div>
+                      )}
                       {descriptions.map((e, index) => (
                         <CheckBox
                           register={register}
@@ -439,11 +498,6 @@ export default function UserForm() {
                           index={index}
                         />
                       ))}
-                      {!!errors['description'] && (
-                        <Form.Control.Feedback type="invalid" style={{ display: 'block' }}>
-                          {errors['description'].message}
-                        </Form.Control.Feedback>
-                      )}
                     </Col>
                   </Row>
                 )}
@@ -456,6 +510,11 @@ export default function UserForm() {
                 <Form.Label column sm="6" className="pr-0 fw-bold">
                   Año de obtención de dicho nivel académico obtenido:
                 </Form.Label>
+                {errors["year_academic_lvl"] && (
+                  <div className="invalid-feedback d-block">
+                    {errors["year_academic_lvl"].message}
+                  </div>
+                )}
                 <Col sm="4">
                   <Form.Control
                     type="number"
@@ -467,11 +526,6 @@ export default function UserForm() {
                     min={new Date().getFullYear() - 80}
                     max={new Date().getFullYear() + 50}
                   />
-                  {errors["year_academic_lvl"] && (
-                    <Form.Control.Feedback type="invalid">
-                      {errors["year_academic_lvl"].message}
-                    </Form.Control.Feedback>
-                  )}
                 </Col>
               </Row>
             </div>
@@ -484,6 +538,10 @@ export default function UserForm() {
               </h3>
             </Row>
             <Row className="mb-3">
+              {!!errors['PBE_knownledge'] &&
+                <div className="invalid-feedback d-block">
+                  {errors['PBE_knownledge'].message}
+                </div>}
               <Col>
                 {booleans.map((e, index) => (
                   <CheckBox
@@ -517,6 +575,10 @@ export default function UserForm() {
                   </h3>
                 </Row>
                 <Row className="mb-3">
+                  {!!errors['PBE_training'] &&
+                    <div className="invalid-feedback d-block">
+                      {errors['PBE_training'].message}
+                    </div>}
                   <Col>
                     {Object.entries(training).map((e, index) => (
                       <CheckBox
@@ -553,6 +615,10 @@ export default function UserForm() {
                   </h3>
                 </Row>
                 <Row>
+                  {!!errors['satisfation'] &&
+                    <div className="invalid-feedback d-block">
+                      {errors['satisfation'].message}
+                    </div>}
                   <Col>
                     {Array.from({ length: 10 }).map((_, index) => (
                       <CheckBox
@@ -579,7 +645,6 @@ export default function UserForm() {
               <Row>
                 <h2 className="section-form">Para profesionales:</h2>
               </Row>
-
               <Container>
                 <div id="supervisor">
                   <Row className="mb-3">
@@ -589,6 +654,10 @@ export default function UserForm() {
                     </h3>
                   </Row>
                   <Row className="mb-3">
+                    {!!errors['supervisor'] &&
+                      <div className="invalid-feedback d-block">
+                        {errors['supervisor'].message}
+                      </div>}
                     <Col>
                       {booleans.map((e, index) => (
                         <CheckBox
@@ -609,6 +678,10 @@ export default function UserForm() {
                 </div>
                 <div id="profesional_years">
                   <Row className="mb-3">
+                    {!!errors['years'] &&
+                      <div className="invalid-feedback d-block">
+                        {errors['years'].message}
+                      </div>}
                     <FormControlFloatingLabel
                       register={register}
                       errors={errors}
@@ -624,9 +697,12 @@ export default function UserForm() {
                     />
                   </Row>
                 </div>
-
                 <div id="profesional_dedication">
                   <Row className="mb-3">
+                    {!!errors['dedicationW'] &&
+                      <div className="invalid-feedback d-block">
+                        {errors['dedicationW'].message}
+                      </div>}
                     <FormControlFloatingLabel
                       register={register}
                       errors={errors}
@@ -637,7 +713,6 @@ export default function UserForm() {
                     />
                   </Row>
                 </div>
-
                 <div id="profesional_enviroments">
                   <Row className="mb-3">
                     <h3 className="tittle-quest">
@@ -647,6 +722,10 @@ export default function UserForm() {
                   </Row>
                   <Row className="mb-3">
                     <Col>
+                      {!!errors['enviroment'] &&
+                        <div className="invalid-feedback d-block">
+                          {errors['enviroment'].message}
+                        </div>}
                       {enviroments.map((e, index) => (
                         <CheckBox
                           inline
@@ -661,11 +740,6 @@ export default function UserForm() {
                           index={index}
                         />
                       ))}
-                      {/* {!!errors['enviroment'] && (
-                        <Form.Control.Feedback type="invalid" style={{ display: 'block' }}>
-                          {errors['enviroment'].message}
-                        </Form.Control.Feedback>
-                      )} */}
                       {otherEnviroment.includes("Otros") && (
                         <OtherCheck
                           name={"other_env"}
@@ -676,7 +750,6 @@ export default function UserForm() {
                     </Col>
                   </Row>
                 </div>
-
                 <div id="profesional_sectors">
                   <Row className="mb-3">
                     <h3 className="tittle-quest">
@@ -686,6 +759,10 @@ export default function UserForm() {
                   </Row>
                   <Row className="mb-3">
                     <Col>
+                      {!!errors['sector'] &&
+                        <div className="invalid-feedback d-block">
+                          {errors['sector'].message}
+                        </div>}
                       {sectors.map((e, index) => (
                         <CheckBox
                           inline
@@ -721,6 +798,10 @@ export default function UserForm() {
                     <span>(Recuerde: La suma debe ser igual a 100)</span>
                   </Row>
                   <Row className="mb-3">
+                    {!!errors['activity'] &&
+                      <div className="invalid-feedback d-block">
+                        {errors['activity'].message}
+                      </div>}
                     <Col>
                       {activities.map((e, index) => (
                         <React.Fragment key={`activities_wrapped_${index}`}>
@@ -736,6 +817,7 @@ export default function UserForm() {
                             index={index}
                           //onChange={updatedActivities}
                           />
+
                           {activitiesChecked.includes(e) && (
                             <FormInputGroup
                               register={register}
@@ -746,6 +828,7 @@ export default function UserForm() {
                               index={index}
                             />
                           )}
+
                         </React.Fragment>
                       ))}
                     </Col>
@@ -761,6 +844,6 @@ export default function UserForm() {
           </div>
         </form>
       </div>
-    </LayoutUser>
+    </LayoutUser >
   );
 }

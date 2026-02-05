@@ -63,7 +63,7 @@ export const questionSlice = createSlice({
       state.questions= []
       state.currentQuestion= null
       state.currentQuestionIndex= -1
-      state.currentOption= null
+      state.currentOption= 0
       state.status= 'idle'
       state.error= null
     }

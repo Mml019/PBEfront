@@ -115,7 +115,7 @@ function UserQuiz() {
 
     // To stablize by default optionSelected as "No lo sé" if question isn't respond
     useEffect(() => {
-        if (currentQuestion && (optionSelected === 0 || currentOption === 0)) {
+        if (currentQuestion && (optionSelected === 0 ||(currentOption === null || currentOption === 0))) {
             // By default is No lo sé option
             const defaultOption = currentQuestion.idO.find(item => item.option === 'No lo sé');
             if (defaultOption) {

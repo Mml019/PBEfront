@@ -15,13 +15,13 @@ export default function FormControlFloatingLabel({ label, type = "text", placeho
           isInvalid={!!errors[name]}
           aria-invalid={!!errors[name]}
           {...rest}
-          className='mb-3'
+          // className='mb-3'
           size='sm'
         />
-        {!!errors[name] &&
+        {/* {!!errors[name] &&
           <Form.Control.Feedback type="invalid">
             {errors[name].message}
-          </Form.Control.Feedback>}
+          </Form.Control.Feedback>} */}
       </FloatingLabel>
   )
 }

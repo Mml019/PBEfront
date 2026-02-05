@@ -1,7 +1,7 @@
 import { Table } from "react-bootstrap"
 import CheckBox from "./FormCheck";
 
-export default function FormTable({register, errors}) {
+export default function FormTable({ register, errors }) {
     const RANKING_VALUES = {
         'Nunca': 0,
         'De vez en cuando': 1,
@@ -52,87 +52,14 @@ export default function FormTable({register, errors}) {
                                     value={num}
                                     index={num}
                                 />
+                                {!!errors[`${type}`] &&
+                                    <div className="invalid-feedback d-block">
+                                        {errors[`${type}`].message}
+                                    </div>}
                             </td>
                         ))}
                     </tr>
-                ))}
-                {/* <tr>
-                    <td>Me he sentido tranquilo/a y relajado/a</td>
-                    {Array.from({ length: 5 }).map((_, index) => (
-                        <td key={index}>
-                            <CheckBox
-                                inline
-                                register={register}
-                                errors={errors}
-                                id={`calm_sas_${RANKING_VALUES[index]}`}
-                                key={`calm_sas_${RANKING_VALUES[index]}`}
-                                name={"calm_sas"}
-                                type="radio"
-                                label={index}
-                                value={index}
-                                index={index}
-                            />
-                        </td>
-                    ))}
-                </tr>
-                <tr>
-                    <td>Me he sentido activo/a y enérgico/a</td>
-                    {Array.from({ length: 5 }).map((_, index) => (
-                        <td key={index}>
-                            <CheckBox
-                                inline
-                                register={register}
-                                errors={errors}
-                                id={`active_sas_${RANKING_VALUES[index]}`}
-                                key={`active_sas_${RANKING_VALUES[index]}`}
-                                name={"active_sas"}
-                                type="radio"
-                                label={index}
-                                value={index}
-                                index={index}
-                            />
-                        </td>
-                    ))}
-                </tr>
-                <tr>
-                    <td>Me he sentido activo/a y enérgico/a</td>
-                    {Array.from({ length: 5 }).map((_, index) => (
-                        <td key={index}>
-                            <CheckBox
-                                inline
-                                register={register}
-                                errors={errors}
-                                id={`fresh_sas_${RANKING_VALUES[index]}`}
-                                key={`fresh_sas_${RANKING_VALUES[index]}`}
-                                name={"fresh_sas"}
-                                type="radio"
-                                label={index}
-                                value={index}
-                                index={index}
-                            />
-                        </td>
-                    ))}
-                </tr>
-                <tr>
-                    <td>Me he sentido activo/a y enérgico/a</td>
-                    {Array.from({ length: 5 }).map((_, index) => (
-                        <td key={index}>
-                            <CheckBox
-                                inline
-                                register={register}
-                                errors={errors}
-                                id={`interest_sas_${RANKING_VALUES[index]}`}
-                                key={`interest_sas_${RANKING_VALUES[index]}`}
-                                name={"interest_sas"}
-                                type="radio"
-                                label={index}
-                                value={index}
-                                index={index}
-                            />
-                        </td>
-                    ))}
-                </tr> */}
+                ))
+                }
             </tbody>
         </Table>);
-}
-
