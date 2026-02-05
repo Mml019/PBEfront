@@ -63,3 +63,4 @@ export default function FormTable({ register, errors }) {
                 }
             </tbody>
         </Table>);
+}
