@@ -225,7 +225,7 @@ export function loadCitiesByCCAA(nameFile = "municipios.xml", code) {
 // -------------------- SCHEMA --------------
 export const yupSchema = yup.object({
   sex: yup.string("Debe escribir su sexo").oneOf(sexs, "Solo puede ser Femenino o Masculino").required("Debe escribir su sexo"),
-  age: yup.number("Debe ser un número").transform(v => isNaN(v) ? 0 : v).integer().max(120, "No puede superar los 120 años").min(16, "Debes tener al menos 16 años").required("Debe escribir su edad en números"),
+  age: yup.number("Debe ser un número").transform(v => isNaN(v) ? 0 : v).integer().max(120, "No puede superar los 120 años").min(18, "Debes tener al menos 18 años").required("Debe escribir su edad en números"),
   level_PBE: yup.number("Debe ser un número del 1 al 5").transform(v => isNaN(v) ? 1 : v).positive().min(1, "Debe estar entre 1 y 5").max(5, "Debe estar entre 1 y 5").required("Debe seleccionar una de las opciones."),
   profile: yup.string("Debe ser un texto").oneOf(Object.keys(perfil), "Debe seleccionar entre Estudiante o Profesional de la salud").required("Debe seleccionar entre Estudiante o Profesional de la salud"),
   speciality: yup.string("Deber se un texto").notRequired(),
